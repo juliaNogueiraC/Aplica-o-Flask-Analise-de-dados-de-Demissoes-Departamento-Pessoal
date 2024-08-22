@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Mensal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Análise Mensal de Funcionários</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="month">Escolha o Mês:</label>
+        <select id="month" name="month">
+            <option value="janeiro">Janeiro</option>
+            <!-- Adicione outras opções de mês aqui -->
+        </select>
+
+        <label for="file">Carregar Planilha Excel:</label>
+        <input type="file" id="file" name="file" accept=".xlsx">
+        <button type="submit">Analisar</button>
+    </form>
+
+    {% if graph_img and bars_img %}
+        <h2>Gráficos de Desligamento para {{ month|capitalize }}</h2>
+        <img src="{{ graph_img }}" alt="Gráfico de Pizza">
+        <img src="{{ bars_img }}" alt="Gráfico de Barras">
+    {% endif %}
+</

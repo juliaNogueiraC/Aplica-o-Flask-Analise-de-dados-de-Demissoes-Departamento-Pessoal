@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Geral</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Análise Geral de Funcionários</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="file">Carregar Planilha Excel:</label>
+        <input type="file" id="file" name="file" accept=".xlsx">
+        <button type="submit">Analisar</button>
+    </form>
+
+    {% if demissoes_table and ativos_table %}
+        <h2>Funcionários Demitidos por Mês em 2024</h2>
+        {{ demissoes_table|safe }}
+
+        <h2>Funcionários Ativos por Mês em 2024</h2>
+        {{ ativos_table|safe }}
+
+        <h2>Gráficos</h2>
+        <img src="{{ graph_img }}" alt="Gráficos">
+    {% endif %}
+</body>
+</html>
