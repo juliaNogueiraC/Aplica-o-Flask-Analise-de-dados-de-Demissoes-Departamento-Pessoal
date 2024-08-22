@@ -4,9 +4,9 @@ services:
   repo: https://github.com/juliaNogueiraC/Aplica-o-Flask-Analise-de-dados-de-Demissoes-Departamento-Pessoal.git
   branch: main
   buildCommand: pip install -r requirements.txt
-  startCommand: python app.py  # Ajuste se app.py estiver em outro diretório
+  startCommand: python app.py  
   env:
     - key: FLASK_ENV
       value: production
     - key: FLASK_APP
-      value: app.py  # Ajuste se necessário
+      value: app.py  
