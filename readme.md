@@ -1,4 +1,4 @@
-# Análise de Demissões - Flask
+# Gerador de Relatório de Demissões para DP/RH
 
 ## **Descrição:**
 
