@@ -1,6 +1,6 @@
 services:
 - type: web
-  name: nome-do-seu-serviço
+  name: Gerador de relatório de demissão DP/RH GAC
   repo: https://github.com/juliaNogueiraC/Aplica-o-Flask-Analise-de-dados-de-Demissoes-Departamento-Pessoal.git
   branch: main
   buildCommand: pip install -r requirements.txt
