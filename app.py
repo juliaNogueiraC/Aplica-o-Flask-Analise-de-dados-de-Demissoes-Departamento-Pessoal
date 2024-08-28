@@ -113,6 +113,7 @@ def analyze_month(month, file):
     except KeyError as e:
         return f"Erro: {e}"
 
+#teste
 # Função para gerar gráficos para análise mensal
 def generate_graphs(contagem_involuntarios, contagem_voluntarios, planilha, desligamentos_involuntarios, desligamentos_voluntarios):
     total_desligamentos = contagem_involuntarios + contagem_voluntarios
@@ -180,4 +181,5 @@ def analyze():
     
     
 if __name__ == '__main__':
-    app.run(debug=True)
+  #     app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
