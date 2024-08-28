@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from tabulate import tabulate  # Certifique-se de importar o tabulate
+from flask import Flask, render_template, request
+from datetime import datetime
+import requests
 
 app = Flask(__name__)
 
@@ -174,6 +177,7 @@ def analyze():
             graph_img, bars_img = analyze_month(month, file)
             return render_template('analyze.html', month=month, graph_img=graph_img, bars_img=bars_img)
     return render_template('analyze.html')
+    
     
 if __name__ == '__main__':
     app.run(debug=True)

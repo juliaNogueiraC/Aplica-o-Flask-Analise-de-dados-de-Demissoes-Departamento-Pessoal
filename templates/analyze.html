@@ -7,39 +7,126 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
+            color: #343a40;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #007bff;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         h1 {
-            color: #333;
+            margin: 0;
+            color: white;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-button {
+            padding: 10px 15px;
+            background-color: #0056b3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: #003d82;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
         }
         form {
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, input[type="file"], button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
         img {
             width: 100%;
             height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+        }
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <h1>Análise Mensal de Funcionários</h1>
-    <form method="post" enctype="multipart/form-data">
-        <label for="month">Escolha o Mês:</label>
-        <select id="month" name="month">
-            <option value="janeiro">Janeiro</option>
-            <!-- Adicione outras opções de mês aqui -->
-        </select>
+    <header>
+        <div class="nav-buttons">
+            <a href="{{ url_for('index') }}" class="nav-button">Voltar</a>
+            <a href="{{ url_for('general_analysis') }}" class="nav-button">Análise Geral</a>
+        </div>
+        <h1>Análise Mensal de Funcionários</h1>
+        <div></div> <!-- Elemento vazio para manter o layout flexbox equilibrado -->
+    </header>
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            <label for="month">Escolha o Mês:</label>
+            <select id="month" name="month">
+                <option value="janeiro">Janeiro</option>
+                <!-- Adicione outras opções de mês aqui -->
+            </select>
 
-        <label for="file">Carregar Planilha Excel:</label>
-        <input type="file" id="file" name="file" accept=".xlsx">
-        <button type="submit">Analisar</button>
-    </form>
+            <label for="file">Carregar Planilha Excel:</label>
+            <input type="file" id="file" name="file" accept=".xlsx">
+            <button type="submit">Analisar</button>
+        </form>
 
-    {% if graph_img and bars_img %}
-        <h2>Gráficos de Desligamento para {{ month|capitalize }}</h2>
-        <img src="{{ graph_img }}" alt="Gráfico de Pizza">
-        <img src="{{ bars_img }}" alt="Gráfico de Barras">
-    {% endif %}
-</
+        {% if graph_img and bars_img %}
+            <h2>Gráficos de Desligamento para {{ month|capitalize }}</h2>
+            <img src="{{ graph_img }}" alt="Gráfico de Pizza">
+            <img src="{{ bars_img }}" alt="Gráfico de Barras">
+        {% endif %}
+    </div>
+    <footer>
+        <p>Desenvolvido por Julia Nogueira &copy; 2024</p>
+        <p>juliacastro@grupoadrianocobuccio.com.br</p>
+    </footer>
+</body>
+</html>
