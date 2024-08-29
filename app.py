@@ -73,6 +73,13 @@ def exibir_graficos(demitidos_por_mes, ativos_por_mes):
 def analyze_month(month, file):
     month_mapping = {
         'janeiro': ('/content/DESLIGAMENTOS 01.24.xlsx', 'DESLIGUES JANEIRO 24'),
+        'fevereiro': ('/content/DESLIGAMENTOS 02.24.xlsx', 'DESLIGUES FEVEREIRO 24'),
+        'marco': ('/content/DESLIGAMENTOS 03.24.xlsx', 'DESLIGUES MARÇO'),
+        'abril': ('/content/DESLIGAMENTOS 04.24.xlsx', 'DESLIGUES ABRIL'),
+        'maio': ('/content/DESLIGAMENTOS 05.24.xlsx', 'DESLIGUES MAIO'),
+        'junho': ('/content/DESLIGAMENTOS 06.24.xlsx', 'DESLIGUES JUNHO'),
+        'julho': ('/content/DESLIGAMENTOS 07.24.xlsx', 'DESLIGUES JULHO'),
+        'agosto': ('/content/DESLIGAMENTOS 08.24.xlsx', 'DESLIGUES AGOSTO'),
         # Adicione os outros meses e seus arquivos
     }
 
