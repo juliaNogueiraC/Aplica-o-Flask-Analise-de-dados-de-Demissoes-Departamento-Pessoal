@@ -6,9 +6,11 @@ import base64
 from tabulate import tabulate  # Certifique-se de importar o tabulate
 from flask import Flask, render_template, request
 from datetime import datetime
-import requests
 
 app = Flask(__name__)
+
+port = int(os.environ.get('PORT', 10000))
+
 
 # Função para processar o arquivo Excel e gerar dados e gráficos para análise geral
 def process_file(file):
@@ -187,6 +189,6 @@ def analyze():
     return render_template('analyze.html')
     
     
-if __name__ == '__main__':
+#if __name__ == '__main__':
   #     app.run(host='0.0.0.0', port=5000)
-    app.run(host='0.0.0.0', port=5000)
+   # app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
