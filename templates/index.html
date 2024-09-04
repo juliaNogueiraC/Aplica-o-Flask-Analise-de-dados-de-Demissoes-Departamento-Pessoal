@@ -33,13 +33,20 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             flex: 1;
-            
-            
         }
         .description {
             margin-bottom: 20px;
             font-size: 16px;
             line-height: 1.6;
+        }
+        .flash-message {
+            background-color: #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
         }
         .button-container {
             text-align: center;
@@ -76,12 +83,19 @@
         <h1> Gerador de Relatório de Demissões - DP/RH Grupo Adriano Cobuccio </h1>
     </header>
     <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
         <h2>Funcionalidade</h2>
         <p class="description">
             Este site oferece ferramentas para análise de demissões de funcionários na empresa. Com ele, você pode gerar gráficos detalhados e realizar cálculos sobre as demissões realizadas. Utilize a opção "Análise Geral" para obter uma visão ampla das demissões e "Análise Mensal" para revisar os dados detalhados de cada mês.
             Navegue pelas opções para explorar diferentes aspectos das demissões e obter insights valiosos para a gestão de pessoal.
         </p>
-        <h3>Escolha a análise que deseja realizar:</h3>
+        <h3 style="text-align: center;">Escolha a análise que deseja realizar:</h3>
         <div class="button-container">
             <a href="{{ url_for('general_analysis') }}">Análise Geral</a>
             <a href="{{ url_for('analyze') }}">Análise Mensal</a>

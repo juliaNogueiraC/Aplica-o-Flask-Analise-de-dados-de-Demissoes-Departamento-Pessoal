@@ -1,16 +1,56 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
-from tabulate import tabulate  # Certifique-se de importar o tabulate
-from flask import Flask, render_template, request
+from tabulate import tabulate
 from datetime import datetime
+import os
+import functools
 
 app = Flask(__name__)
 
-#port = int(os.environ.get('PORT', 10000))
+# Defina uma chave secreta para gerenciar as sessões
+# Em produção, use uma chave segura e mantenha-a em segredo (e.g., variável de ambiente)
+app.secret_key = os.urandom(24)
 
+# Usuários cadastrados (em um cenário real, você usaria um banco de dados)
+users = {'julia.castro': 'bcard123'}
+
+# Decorador para proteger rotas que requerem login
+def login_required(f):
+    @functools.wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash("Você precisa fazer login primeiro.")
+            return redirect(url_for('login'))
+    return wrap
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if username in users and users[username] == password:
+            session['logged_in'] = True
+            session['username'] = username
+            flash("Login bem-sucedido!")
+            return redirect(url_for('index'))
+        else:
+            flash("Credenciais inválidas. Tente novamente.")
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    flash("Você foi desconectado.")
+    return redirect(url_for('login'))
 
 # Função para processar o arquivo Excel e gerar dados e gráficos para análise geral
 def process_file(file):
@@ -74,19 +114,20 @@ def exibir_graficos(demitidos_por_mes, ativos_por_mes):
 # Função para processar e analisar os dados de desligamento de um mês específico
 def analyze_month(month, file):
     month_mapping = {
-        'janeiro': ('/content/DESLIGAMENTOS 01.24.xlsx', 'DESLIGUES JANEIRO 24'),
-        'fevereiro': ('/content/DESLIGAMENTOS 02.24.xlsx', 'DESLIGUES FEVEREIRO 24'),
-        'marco': ('/content/DESLIGAMENTOS 03.24.xlsx', 'DESLIGUES MARÇO'),
-        'abril': ('/content/DESLIGAMENTOS 04.24.xlsx', 'DESLIGUES ABRIL'),
-        'maio': ('/content/DESLIGAMENTOS 05.24.xlsx', 'DESLIGUES MAIO'),
-        'junho': ('/content/DESLIGAMENTOS 06.24.xlsx', 'DESLIGUES JUNHO'),
-        'julho': ('/content/DESLIGAMENTOS 07.24.xlsx', 'DESLIGUES JULHO'),
-        'agosto': ('/content/DESLIGAMENTOS 08.24.xlsx', 'DESLIGUES AGOSTO'),
+        'janeiro': ('DESLIGAMENTOS 01.24.xlsx', 'DESLIGUES JANEIRO 24'),
+        'fevereiro': ('DESLIGAMENTOS 02.24.xlsx', 'DESLIGUES FEVEREIRO 24'),
+        'marco': ('DESLIGAMENTOS 03.24.xlsx', 'DESLIGUES MARÇO'),
+        'abril': ('DESLIGAMENTOS 04.24.xlsx', 'DESLIGUES ABRIL'),
+        'maio': ('DESLIGAMENTOS 05.24.xlsx', 'DESLIGUES MAIO'),
+        'junho': ('DESLIGAMENTOS 06.24.xlsx', 'DESLIGUES JUNHO'),
+        'julho': ('DESLIGAMENTOS 07.24.xlsx', 'DESLIGUES JULHO'),
+        'agosto': ('DESLIGAMENTOS 08.24.xlsx', 'DESLIGUES AGOSTO'),
         # Adicione os outros meses e seus arquivos
     }
 
     if month not in month_mapping:
-        raise ValueError(f"Mês {month} não suportado.")
+        flash(f"Mês {month.capitalize()} não suportado.")
+        return redirect(url_for('analyze'))
 
     caminho_planilha, aba = month_mapping[month]
 
@@ -94,7 +135,8 @@ def analyze_month(month, file):
         planilha = pd.read_excel(file, sheet_name=aba)
 
         if 'TIPO DE DESLIGAMENTO' not in planilha.columns:
-            raise KeyError("'TIPO DE DESLIGAMENTO' não encontrado na aba do mês selecionado")
+            flash("'TIPO DE DESLIGAMENTO' não encontrado na aba do mês selecionado.")
+            return redirect(url_for('analyze'))
 
         desligamentos_involuntarios = [
             'TERMINO DE CONTRATO POR PRAZO DETERMINADO - 2ª EXP.',
@@ -115,20 +157,21 @@ def analyze_month(month, file):
 
         graph_img, bars_img = generate_graphs(contagem_involuntarios, contagem_voluntarios, planilha, desligamentos_involuntarios, desligamentos_voluntarios)
 
-        return graph_img, bars_img
+        return render_template('analyze_result.html', month=month.capitalize(), graph_img=graph_img, bars_img=bars_img)
 
     except FileNotFoundError:
-        return f"Arquivo não encontrado: {caminho_planilha}"
+        flash(f"Arquivo não encontrado: {caminho_planilha}")
+        return redirect(url_for('analyze'))
     except KeyError as e:
-        return f"Erro: {e}"
+        flash(f"Erro: {e}")
+        return redirect(url_for('analyze'))
 
-#teste
 # Função para gerar gráficos para análise mensal
 def generate_graphs(contagem_involuntarios, contagem_voluntarios, planilha, desligamentos_involuntarios, desligamentos_voluntarios):
     total_desligamentos = contagem_involuntarios + contagem_voluntarios
     percentuais = [
-        contagem_involuntarios / total_desligamentos * 100,
-        contagem_voluntarios / total_desligamentos * 100
+        contagem_involuntarios / total_desligamentos * 100 if total_desligamentos > 0 else 0,
+        contagem_voluntarios / total_desligamentos * 100 if total_desligamentos > 0 else 0
     ]
 
     tipos_desligamento = ['Involuntárias', 'Voluntárias']
@@ -153,7 +196,13 @@ def generate_graphs(contagem_involuntarios, contagem_voluntarios, planilha, desl
     plt.xlabel('Quantidade')
     plt.ylabel('Tipo de Desligamento')
 
+    # Adicionar valores nas barras
+    for bar in bars:
+        width = bar.get_width()
+        plt.text(width + 0.1, bar.get_y() + bar.get_height()/2, str(width), va='center')
+
     img2 = io.BytesIO()
+    plt.tight_layout()
     plt.savefig(img2, format='png')
     img2.seek(0)
     bars_url = base64.b64encode(img2.getvalue()).decode()
@@ -162,16 +211,20 @@ def generate_graphs(contagem_involuntarios, contagem_voluntarios, planilha, desl
     return f'data:image/png;base64,{graph_url}', f'data:image/png;base64,{bars_url}'
 
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
     return render_template('index.html')
 
 @app.route('/general_analysis', methods=['GET', 'POST'])
+@login_required
 def general_analysis():
     if request.method == 'POST':
         if 'file' not in request.files:
+            flash("Nenhum arquivo enviado.")
             return redirect(request.url)
         file = request.files['file']
         if file.filename == '':
+            flash("Nenhum arquivo selecionado.")
             return redirect(request.url)
         if file:
             demissoes_table, ativos_table, graph_img = process_file(file)
@@ -179,17 +232,19 @@ def general_analysis():
     return render_template('general_analysis.html')
 
 @app.route('/analyze', methods=['GET', 'POST'])
+@login_required
 def analyze():
     if request.method == 'POST':
         month = request.form.get('month')
         file = request.files.get('file')
-        if file and month:
-            graph_img, bars_img = analyze_month(month, file)
-            return render_template('analyze.html', month=month, graph_img=graph_img, bars_img=bars_img)
+        if not month:
+            flash("Selecione um mês para análise.")
+            return redirect(request.url)
+        if not file or file.filename == '':
+            flash("Nenhum arquivo enviado.")
+            return redirect(request.url)
+        return analyze_month(month, file)
     return render_template('analyze.html')
-    
-    
-if __name__ == '__main__':
-       app.run(host='0.0.0.0', port=5000)
-    #app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

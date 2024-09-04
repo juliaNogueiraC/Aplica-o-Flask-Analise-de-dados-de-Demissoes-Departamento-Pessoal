@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>Gerador de Relatório de Demissões - DP/RH Grupo Adriano Cobuccio</title>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -101,6 +103,9 @@
         }
         .nav-button:hover {
             background-color: #003d82;
+        }
+        form{
+            margin-top: 50px;
         }
     </style>
 </head>
